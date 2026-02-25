@@ -17,7 +17,7 @@ CREATE TABLE PRODUCTO_V2 (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     categoria_id INTEGER,
     proveedor_id INTEGER,
-    sku TEXT UNIQUE, -- Stock Keeping Unit (más pro que solo código)
+    sku TEXT UNIQUE, 
     nombre TEXT NOT NULL,
     precio_costo REAL,
     precio_venta REAL,
