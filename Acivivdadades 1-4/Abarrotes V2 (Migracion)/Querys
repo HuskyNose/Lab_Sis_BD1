@@ -48,9 +48,9 @@ INSERT INTO PROVEEDOR (empresa, rfc) VALUES ('PROVEEDOR Ejemlpo', 'rfc prueba');
 INSERT INTO PRODUCTO_V2 (categoria_id, proveedor_id, sku, nombre, precio_costo, precio_venta, stock_actual)
 SELECT 
     CATEGORIA_ID, 
-    CODIGO_BARRAS, -- Usamos el código viejo como SKU inicial
+    CODIGO_BARRAS, 
     NOMBRE, 
-    PRECIO_VENTA * 0.70, -- Estimamos un costo del 70% para no dejar nulos
+    PRECIO_VENTA 
     PRECIO_VENTA, 
     STOCK 
 FROM PRODUCTO;
