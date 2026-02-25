@@ -1,0 +1,62 @@
+Abarrotes v2(migracion de datos)
+
+Nueva estructura
+
+proveedor
+CREATE TABLE PROVEEDOR (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    empresa TEXT NOT NULL,
+    rfc TEXT UNIQUE,
+    contacto TEXT,
+    telefono TEXT,
+    created_at TEXT DEFAULT (DATETIME('now'))
+);
+
+Productov2 (se mejoro la estructura)
+CREATE TABLE PRODUCTO_V2 (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    categoria_id INTEGER,
+    proveedor_id INTEGER,
+    sku TEXT UNIQUE, -- Stock Keeping Unit (más pro que solo código)
+    nombre TEXT NOT NULL,
+    precio_costo REAL,
+    precio_venta REAL,
+    stock_actual INTEGER DEFAULT 0,
+    stock_minimo INTEGER DEFAULT 5,
+    last_update TEXT DEFAULT (DATETIME('now')),
+    FOREIGN KEY (categoria_id) REFERENCES CATEGORIA(ID),
+    FOREIGN KEY (proveedor_id) REFERENCES PROVEEDOR(id)
+);
+
+Inventario
+CREATE TABLE INVENTARIO_HISTORIAL (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    producto_id INTEGER,
+    tipo_movimiento TEXT CHECK(tipo_movimiento IN ('ENTRADA', 'SALIDA', 'AJUSTE')),
+    cantidad INTEGER,
+    motivo TEXT,
+    fecha TEXT DEFAULT (DATETIME('now')),
+    FOREIGN KEY (producto_id) REFERENCES PRODUCTO_V2(id)
+);
+
+-------------------------------------
+insertando datos en la nueva V2
+
+INSERT INTO PROVEEDOR (empresa, rfc) VALUES ('PROVEEDOR Ejemlpo', 'rfc prueba');
+
+
+INSERT INTO PRODUCTO_V2 (categoria_id, proveedor_id, sku, nombre, precio_costo, precio_venta, stock_actual)
+SELECT 
+    CATEGORIA_ID, 
+    1, -- El ID del proveedor genérico que acabamos de crear
+    CODIGO_BARRAS, -- Usamos el código viejo como SKU inicial
+    NOMBRE, 
+    PRECIO_VENTA * 0.70, -- Estimamos un costo del 70% para no dejar nulos
+    PRECIO_VENTA, 
+    STOCK 
+FROM PRODUCTO;
+
+
+INSERT INTO INVENTARIO_HISTORIAL (producto_id, tipo_movimiento, cantidad, motivo)
+SELECT id, 'ENTRADA', stock_actual, 'MIGRACION INICIAL V1 A V2'
+FROM PRODUCTO_V2;

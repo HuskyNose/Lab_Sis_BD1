@@ -1,0 +1,37 @@
+biblioteca querys de instertar datos
+
+Autores
+INSERT INTO AUTOR (NOMBRE, NACIONALIDAD, BIBLIOGRAFIA) VALUES 
+('Roberto Pala', 'Estadounidense', 'Especialista en tutoriales de software y bases de datos desde 1955.'),
+('Ada Lovelace', 'Británica', 'Pionera en la programación y algoritmos computacionales.');
+
+Editorial
+INSERT INTO EDITORIAL (NOMBRE, DIRECCION, TELEFONO, EMAIL) VALUES 
+('Editorial Pala', 'Washington DC', '12354564', 'contacto@editorialpala.com'),
+('Tech Books MX', 'CDMX, México', '55512345', 'ventas@techbooks.mx');
+
+Libros
+INSERT INTO LIBRO (TITULO, ISBN, GENERO, IDIOMA, PAGINAS, FECHA_PUBLICACION, DESCRIPCION) VALUES 
+('Yo no lo descargo porque ya lo tengo', '978-1234567890', 'Informática', 'Español', 350, '2025-01-15', 'Guía definitiva sobre gestión de software y nostalgia digital.'),
+('Algoritmos de Software', '978-0987654321', 'Ingeniería', 'Español', 420, '2024-11-20', 'Fundamentos modernos para ingeniería de software.');
+
+Libro autor(no relacion)
+INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID, ORDEN_AUTORIA, ROL) VALUES 
+(1, 1, 1, 'Autor Principal'),
+(2, 2, 1, 'Autor Principal');
+
+Usuarios
+INSERT INTO USUARIO (NOMBRE, EMAIL, TELEFONO, TIPO, ACTIVO) VALUES 
+('Husky Admin', 'husky@biblioteca.edu', '4921234567', 'admin', 1),
+('Juan Estudiante', 'juan.perez@biblioteca.edu', '4929876543', 'alumno', 1);
+
+ediciones
+INSERT INTO EDICION (LIBRO_ID, EDITORIAL_ID, NUM_EDICION, FECHA_LANZAMIENTO, LUGAR_PUBLICACION, ISBN_EDICION) VALUES 
+(1, 1, 1, '2025-02-01', 'Estados Unidos', 'ISBN-PALA-001'),
+(2, 2, 2, '2024-12-01', 'México', 'ISBN-TECH-002');
+
+Ejemplares
+INSERT INTO EJEMPLAR (EDICION_ID, CODIGO_BARRAS, UBICACION, ESTADO) VALUES 
+(1, 'BC-001', 'Estante A1-Software', 'disponible'),
+(1, 'BC-002', 'Estante A1-Software', 'disponible'),
+(2, 'BC-003', 'Estante B2-Ingeniería', 'disponible');
