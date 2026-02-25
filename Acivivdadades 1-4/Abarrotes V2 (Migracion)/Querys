@@ -48,7 +48,6 @@ INSERT INTO PROVEEDOR (empresa, rfc) VALUES ('PROVEEDOR Ejemlpo', 'rfc prueba');
 INSERT INTO PRODUCTO_V2 (categoria_id, proveedor_id, sku, nombre, precio_costo, precio_venta, stock_actual)
 SELECT 
     CATEGORIA_ID, 
-    1, -- El ID del proveedor genérico que acabamos de crear
     CODIGO_BARRAS, -- Usamos el código viejo como SKU inicial
     NOMBRE, 
     PRECIO_VENTA * 0.70, -- Estimamos un costo del 70% para no dejar nulos
