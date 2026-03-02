@@ -2,13 +2,13 @@ Bilbioteca, relaciones
 
 
 INSERT INTO AUTOR (NOMBRE, NACIONALIDAD) 
-VALUES ('Isaac Asimov', 'Ruso-Estadounidense'); -- Suponiendo que este es el ID 3
+VALUES ('Isaac Asimov', 'Ruso-Estadounidense'); 
 
 INSERT INTO LIBRO_AUTOR (LIBRO_ID, AUTOR_ID, ORDEN_AUTORIA, ROL) 
 VALUES (2, 3, 2, 'Co-autor');
 
 INSERT INTO EDICION (LIBRO_ID, EDITORIAL_ID, NUM_EDICION, FECHA_LANZAMIENTO, ISBN_EDICION)
-VALUES (1, 1, 2, '2026-01-01', 'ISBN-PALA-V2'); -- Esto genera el ID de Edición 3
+VALUES (1, 1, 2, '2026-01-01', 'ISBN-PALA-V2'); 
 
 INSERT INTO EJEMPLAR (EDICION_ID, CODIGO_BARRAS, UBICACION, ESTADO) VALUES 
 (3, 'PALA-V2-001', 'Vitrina de Colección', 'disponible'),
@@ -17,11 +17,11 @@ INSERT INTO EJEMPLAR (EDICION_ID, CODIGO_BARRAS, UBICACION, ESTADO) VALUES
 INSERT INTO RESERVA (USUARIO_ID, LIBRO_ID, EXPIRA_EN, ESTADO)
 VALUES (2, 1, DATE('now', '+3 days'), 'activa');
 
-UPDATE RESERVA SET ESTADO = 'cumplida' WHERE ID = 2; -- Asumiendo que es la reserva 2
+UPDATE RESERVA SET ESTADO = 'cumplida' WHERE ID = 2; 
 
-INSERT INTO PRESTAMO (USUARIO_ID, OBSERVACIONES) VALUES (2, 'Recogió su reserva'); -- Préstamo ID 2
+INSERT INTO PRESTAMO (USUARIO_ID, OBSERVACIONES) VALUES (2, 'Recogió su reserva'); 
 INSERT INTO PRESTAMO_ITEM (PRESTAMO_ID, EJEMPLAR_ID, FECHA_VENCIMIENTO) 
-VALUES (2, 2, DATE('now', '+15 days')); -- Se lleva el ejemplar BC-002
+VALUES (2, 2, DATE('now', '+15 days')); 
 
 
 (Comando generado por gemini para la verificacion de las relaciones)

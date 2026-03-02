@@ -192,7 +192,6 @@ CREATE TABLE PRESTAMO_ITEM (
 CREATE INDEX idx_prestamo_item_ejemplar ON PRESTAMO_ITEM (EJEMPLAR_ID);
 CREATE INDEX idx_prestamo_item_estado   ON PRESTAMO_ITEM (ESTADO);
 
--- Evita 2 préstamos activos del mismo ejemplar
 CREATE UNIQUE INDEX uq_ejemplar_prestamo_activo
 ON PRESTAMO_ITEM (EJEMPLAR_ID)
 WHERE ESTADO = 'activo';
