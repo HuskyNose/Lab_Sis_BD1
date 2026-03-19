@@ -144,8 +144,8 @@ async function renderLibros() {
       h("span", { class: "badge bad" }, [`0/${tot} disponibles`]);
 
     const btns = h("div", { class: "actions" }, [
-      h("button", { class: "btn", onClick: () => libroDetalle(x.ID) }, ["Detalle"]),
-      h("button", { class: "btn danger", onClick: () => delLibro(x.ID) }, ["Eliminar"])
+      h("button", { class: "btn", onclick: () => libroDetalle(x.ID) }, ["Detalle"]),
+      h("button", { class: "btn danger", onclick: () => delLibro(x.ID) }, ["Eliminar"])
     ]);
 
     return [
@@ -196,8 +196,8 @@ async function libroDetalle(id) {
   ]);
 
   const footer = [
-    h("button", { class: "btn", onClick: async () => openLibroEdit(libro) }, ["Editar"]),
-    h("button", { class: "btn primary", onClick: async () => openAutoresAsignacion(libro.ID) }, ["Asignar autores"])
+    h("button", { class: "btn", onclick: async () => openLibroEdit(libro) }, ["Editar"]),
+    h("button", { class: "btn primary", onclick: async () => openAutoresAsignacion(libro.ID) }, ["Asignar autores"])
   ];
 
   openModal("Detalle de libro", "Catálogo", body, footer);
@@ -223,8 +223,9 @@ async function openLibroEdit(libro) {
   };
 
   openModal("Editar libro", `ID ${libro.ID}`, form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Guardar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Guardar"])
+    
   ]);
 }
 
@@ -270,8 +271,8 @@ async function openAutoresAsignacion(libroId) {
   };
 
   openModal("Asignar autores", `Libro ID ${libroId}`, wrap, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Guardar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Guardar"])
   ]);
 }
 
@@ -289,8 +290,8 @@ async function renderAutores() {
     x.NOMBRE || "",
     x.NACIONALIDAD || "—",
     h("div", { class: "actions" }, [
-      h("button", { class: "btn", onClick: () => editAutor(x) }, ["Editar"]),
-      h("button", { class: "btn danger", onClick: () => delAutor(x.ID) }, ["Eliminar"])
+      h("button", { class: "btn", onclick: () => editAutor(x) }, ["Editar"]),
+      h("button", { class: "btn danger", onclick: () => delAutor(x.ID) }, ["Eliminar"])
     ])
   ]));
 
@@ -305,8 +306,8 @@ async function renderEditoriales() {
     x.NOMBRE || "",
     x.EMAIL || "—",
     h("div", { class: "actions" }, [
-      h("button", { class: "btn", onClick: () => editEditorial(x) }, ["Editar"]),
-      h("button", { class: "btn danger", onClick: () => delEditorial(x.ID) }, ["Eliminar"])
+      h("button", { class: "btn", onclick: () => editEditorial(x) }, ["Editar"]),
+      h("button", { class: "btn danger", onclick: () => delEditorial(x.ID) }, ["Eliminar"])
     ])
   ]));
 
@@ -323,8 +324,8 @@ async function renderUsuarios() {
     x.EMAIL || "—",
     x.ACTIVO === 1 ? h("span", { class: "badge ok" }, ["Activo"]) : h("span", { class: "badge bad" }, ["Inactivo"]),
     h("div", { class: "actions" }, [
-      h("button", { class: "btn", onClick: () => editUsuario(x) }, ["Editar"]),
-      h("button", { class: "btn danger", onClick: () => desactUsuario(x.ID) }, ["Desactivar"])
+      h("button", { class: "btn", onclick: () => editUsuario(x) }, ["Editar"]),
+      h("button", { class: "btn danger", onclick: () => desactUsuario(x.ID) }, ["Desactivar"])
     ])
   ]));
 
@@ -341,8 +342,8 @@ async function renderEdiciones() {
     x.NUM_EDICION ?? "—",
     x.ISBN_EDICION ?? "—",
     h("div", { class: "actions" }, [
-      h("button", { class: "btn", onClick: () => editEdicion(x) }, ["Editar"]),
-      h("button", { class: "btn danger", onClick: () => delEdicion(x.ID) }, ["Eliminar"])
+      h("button", { class: "btn", onclick: () => editEdicion(x) }, ["Editar"]),
+      h("button", { class: "btn danger", onclick: () => delEdicion(x.ID) }, ["Eliminar"])
     ])
   ]));
 
@@ -360,8 +361,8 @@ async function renderEjemplares() {
     x.ESTADO,
     x.UBICACION || "—",
     h("div", { class: "actions" }, [
-      h("button", { class: "btn", onClick: () => editEjemplar(x) }, ["Editar"]),
-      h("button", { class: "btn danger", onClick: () => delEjemplar(x.ID) }, ["Eliminar"])
+      h("button", { class: "btn", onclick: () => editEjemplar(x) }, ["Editar"]),
+      h("button", { class: "btn danger", onclick: () => delEjemplar(x.ID) }, ["Eliminar"])
     ])
   ]));
 
@@ -378,7 +379,7 @@ async function renderPrestamos() {
     String(p.ITEMS || 0),
     Number(p.VENCIDOS || 0) > 0 ? h("span", { class: "badge bad" }, [`${p.VENCIDOS} vencido(s)`]) : h("span", { class: "badge ok" }, ["OK"]),
     h("div", { class: "actions" }, [
-      h("button", { class: "btn", onClick: () => detallePrestamo(p.ID) }, ["Detalle"])
+      h("button", { class: "btn", onclick: () => detallePrestamo(p.ID) }, ["Detalle"])
     ])
   ]));
 
@@ -399,7 +400,7 @@ async function detallePrestamo(id) {
           items.map((it) => {
             const canReturn = it.ESTADO === "activo";
             const btn = canReturn
-              ? h("button", { class: "btn primary", onClick: () => devolverItem(prestamo.ID, it.EJEMPLAR_ID) }, ["Devolver"])
+              ? h("button", { class: "btn primary", onclick: () => devolverItem(prestamo.ID, it.EJEMPLAR_ID) }, ["Devolver"])
               : h("span", { class: "muted" }, ["—"]);
             return [
               it.CODIGO_BARRAS,
@@ -415,7 +416,7 @@ async function detallePrestamo(id) {
   ]);
 
   openModal("Detalle de préstamo", `ID ${prestamo.ID}`, body, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cerrar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cerrar"])
   ]);
 }
 
@@ -441,10 +442,10 @@ async function renderReservas() {
     x.ESTADO,
     h("div", { class: "actions" }, [
       x.ESTADO === "activa"
-        ? h("button", { class: "btn", onClick: () => cancelarReserva(x.ID) }, ["Cancelar"])
+        ? h("button", { class: "btn", onclick: () => cancelarReserva(x.ID) }, ["Cancelar"])
         : h("span", { class: "muted" }, ["—"]),
       x.ESTADO === "activa"
-        ? h("button", { class: "btn primary", onClick: () => cumplirReserva(x.ID) }, ["Cumplir"])
+        ? h("button", { class: "btn primary", onclick: () => cumplirReserva(x.ID) }, ["Cumplir"])
         : h("span", { class: "muted" }, ["—"])
     ])
   ]));
@@ -504,8 +505,8 @@ async function newLibro() {
   };
 
   openModal("Nuevo libro", "Catálogo", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
 
@@ -525,8 +526,8 @@ async function newAutor() {
   };
 
   openModal("Nuevo autor", "Catálogo", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
 
@@ -546,8 +547,8 @@ async function editAutor(x) {
   };
 
   openModal("Editar autor", `ID ${x.ID}`, form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Guardar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Guardar"])
   ]);
 }
 
@@ -575,8 +576,8 @@ async function newEditorial() {
   };
 
   openModal("Nueva editorial", "Catálogo", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
 
@@ -597,8 +598,8 @@ async function editEditorial(x) {
   };
 
   openModal("Editar editorial", `ID ${x.ID}`, form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Guardar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Guardar"])
   ]);
 }
 
@@ -629,8 +630,8 @@ async function newUsuario() {
   };
 
   openModal("Nuevo usuario", "Biblioteca", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
 
@@ -654,8 +655,8 @@ async function editUsuario(x) {
   };
 
   openModal("Editar usuario", `ID ${x.ID}`, form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Guardar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Guardar"])
   ]);
 }
 
@@ -693,8 +694,8 @@ async function newEdicion() {
   };
 
   openModal("Nueva edición", "Catálogo", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
 
@@ -725,8 +726,8 @@ async function editEdicion(x) {
   };
 
   openModal("Editar edición", `ID ${x.ID}`, form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Guardar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Guardar"])
   ]);
 }
 
@@ -757,8 +758,8 @@ async function newEjemplar() {
   };
 
   openModal("Nuevo ejemplar", "Catálogo", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
 
@@ -777,8 +778,8 @@ async function editEjemplar(x) {
   };
 
   openModal("Editar ejemplar", `ID ${x.ID} — ${x.CODIGO_BARRAS}`, form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Guardar"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Guardar"])
   ]);
 }
 
@@ -836,7 +837,7 @@ async function newPrestamo() {
           String(it.ejemplar_id),
           it.codigo,
           it.titulo,
-          h("button", { class: "btn danger", onClick: () => { items.splice(idx,1); refreshItems(); } }, ["Quitar"])
+          h("button", { class: "btn danger", onclick: () => { items.splice(idx,1); refreshItems(); } }, ["Quitar"])
         ])
       )
     );
@@ -861,7 +862,7 @@ async function newPrestamo() {
     refreshItems();
   };
 
-  const addBtn = h("button", { class: "btn", onClick: addByBarcode }, ["Agregar ejemplar"]);
+  const addBtn = h("button", { class: "btn", onclick: addByBarcode }, ["Agregar ejemplar"]);
   top.appendChild(h("div", { class: "field full" }, [addBtn]));
 
   form.appendChild(top);
@@ -896,39 +897,80 @@ async function newPrestamo() {
   };
 
   openModal("Nuevo préstamo", "Circulación", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
 
+//Funciom generada por Gemini para forzar el mapeo de mayúsculas/minúsculas en usuarios y libros, ya que selectField no funcionó correctamente con reservas. Se puede usar este mismo patrón para los otros selects si se desea más consistencia.
+//El crud con esta funcion ya funciona correctamente
+
 async function newReserva() {
-  const [users, libros] = await Promise.all([
+  const [usersRes, librosRes] = await Promise.all([
     api.get("/api/select/usuarios"),
     api.get("/api/select/libros")
   ]);
 
+  // Forzamos el mapeo para que no haya dudas con las mayúsculas/minúsculas de la DB
+  const usuariosData = (usersRes.data || []).map(u => ({ id: u.ID || u.id, label: u.NOMBRE || u.nombre }));
+  const librosData = (librosRes.data || []).map(l => ({ id: l.ID || l.id, label: l.TITULO || l.titulo }));
+
   const form = h("div", { class: "form" }, [
-    selectField("Usuario", "usuario_id", users.data),
-    selectField("Libro", "libro_id", libros.data.map(x => ({ ID: x.ID, LABEL: x.TITULO }))),
-    field("Expira en (opcional)", "expira_en", "")
+    // Creamos los selects manualmente si selectField falla
+    h("div", { class: "field" }, [
+      h("label", {}, ["Usuario"]),
+      h("select", { name: "usuario_id", class: "input" }, [
+        h("option", { value: "" }, ["-- Seleccione Usuario --"]),
+        ...usuariosData.map(u => h("option", { value: u.id }, [u.label]))
+      ])
+    ]),
+    h("div", { class: "field" }, [
+      h("label", {}, ["Libro"]),
+      h("select", { name: "libro_id", class: "input" }, [
+        h("option", { value: "" }, ["-- Seleccione Libro --"]),
+        ...librosData.map(l => h("option", { value: l.id }, [l.label]))
+      ])
+    ]),
+    h("div", { class: "field" }, [
+      h("label", {}, ["Expira en"]),
+      h("input", { type: "date", name: "expira_en", class: "input" })
+    ])
   ]);
 
   const save = async () => {
-    const payload = readForm(form);
-    payload.usuario_id = Number(payload.usuario_id);
-    payload.libro_id = Number(payload.libro_id);
-    await api.send("/api/reservas", "POST", payload);
-    toast("Reserva creada");
-    closeModal();
-    render();
+    // Obtenemos los valores manualmente para asegurar que no lleguen vacíos
+    const uId = form.querySelector('[name="usuario_id"]').value;
+    const lId = form.querySelector('[name="libro_id"]').value;
+    const exp = form.querySelector('[name="expira_en"]').value;
+
+    if (!uId || !lId) {
+      alert("Debes seleccionar un usuario y un libro obligatoriamente");
+      return;
+    }
+
+    const payload = {
+      usuario_id: Number(uId),
+      libro_id: Number(lId),
+      expira_en: exp || null
+    };
+
+    console.log("Enviando reserva:", payload);
+
+    try {
+      await api.send("/api/reservas", "POST", payload);
+      toast("Reserva creada correctamente");
+      closeModal();
+      render();
+    } catch (e) {
+      alert("Error en el servidor: " + e.message);
+    }
   };
 
   openModal("Nueva reserva", "Reservas", form, [
-    h("button", { class: "btn", onClick: closeModal }, ["Cancelar"]),
-    h("button", { class: "btn primary", onClick: save }, ["Crear"])
+    h("button", { class: "btn", onclick: closeModal }, ["Cancelar"]),
+    h("button", { class: "btn primary", onclick: save }, ["Crear"])
   ]);
 }
-
 async function cancelarReserva(id) {
   await api.send(`/api/reservas/${id}/cancelar`, "PUT", {});
   toast("Reserva cancelada");
