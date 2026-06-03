@@ -953,7 +953,7 @@ async function newReserva() {
   ]);
 
   const save = async () => {
-    // Obtenemos los valores manualmente para asegurar que no lleguen vacíos
+    // Obtenemos los valores manualmente para asegurar que no lleguen vacío
     const uId = form.querySelector('[name="usuario_id"]').value;
     const lId = form.querySelector('[name="libro_id"]').value;
     const exp = form.querySelector('[name="expira_en"]').value;
