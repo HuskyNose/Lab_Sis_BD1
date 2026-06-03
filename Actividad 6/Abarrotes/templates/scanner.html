@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector POS</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #2c3e50; color: white; margin: 0; padding: 20px;}
+        #reader { width: 100%; max-width: 500px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3);}
+        
+        /* Ocultamos el logo genérico de la librería para mantenerlo profesional */
+        #reader img { display: none !important; }
+        
+        .status { margin-top: 20px; font-size: 1.3em; color: #2ecc71; font-weight: bold; height: 30px; }
+    </style>
+</head>
+<body>
+    <h2>📱 Escáner de Caja</h2>
+    <div id="reader"></div>
+    <div id="status" class="status">Cámara lista...</div>
+
+    <script>
+        // --- SINTETIZADOR DE "BEEP" ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); 
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); /
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1); 
+        }
+
+        // --- CONFIGURACIÓN DEL ESCÁNER ---
+        const html5QrcodeScanner = new Html5QrcodeScanner("reader", { 
+            fps: 15, 
+            qrbox: { width: 250, height: 100 } 
+        });
+
+        // --- LÓGICA DE ESCANEO ---
+        async function onScanSuccess(decodedText, decodedResult) {
+            playBeep();
+            if (navigator.vibrate) {
+                navigator.vibrate(100); // Vibra el celular 100 milisegundos
+            }
+
+            // 2. Actualizar UI
+            document.getElementById('status').innerText = "Enviando: " + decodedText;
+            document.getElementById('status').style.color = "#f1c40f";
+
+            // 3. Bloquear temporalmente (Debouncing)
+            html5QrcodeScanner.pause(true); 
+
+            try {
+                // 4. Enviar a la PC
+                await fetch('/api/add_scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo_barras: decodedText })
+                });
+                
+                document.getElementById('status').innerText = "✅ ¡Enviado a caja!";
+                document.getElementById('status').style.color = "#2ecc71";
+            } catch (err) {
+                document.getElementById('status').innerText = "❌ Error de red";
+                document.getElementById('status').style.color = "#e74c3c";
+            }
+
+            // 5. Reactivar la cámara después de 1.5 segundos
+            setTimeout(() => { 
+                document.getElementById('status').innerText = "Cámara lista...";
+                document.getElementById('status').style.color = "#2ecc71";
+                html5QrcodeScanner.resume(); 
+            }, 1500);
+        }
+
+        html5QrcodeScanner.render(onScanSuccess);
+    </script>
+</body>
+</html>

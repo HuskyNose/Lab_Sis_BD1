@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Abarrotes - UAZ</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; }
+        .header { background-color: #2c3e50; padding: 15px; color: white; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* Estilos de las Pestañas */
+        .tab { overflow: hidden; background-color: #34495e; display: flex; justify-content: center; position: sticky; top: 0; z-index: 100; }
+        .tab button { background-color: inherit; color: white; border: none; outline: none; cursor: pointer; padding: 14px 24px; transition: 0.3s; font-size: 16px; }
+        .tab button:hover { background-color: #1abc9c; }
+        .tab button.active { background-color: #16a085; font-weight: bold; border-bottom: 3px solid white; }
+        
+        /* Contenido de las Pestañas */
+        .tabcontent { display: none; padding: 30px; max-width: 1100px; margin: auto; animation: fadeEffect 0.5s; }
+        @keyframes fadeEffect { from {opacity: 0;} to {opacity: 1;} }
+        
+        /* Cartas y Contenedores */
+        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; margin-bottom: 25px; }
+        
+        /* Tablas */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; color: #2c3e50; font-weight: 600; }
+        tr:hover { background-color: #fcfcfc; }
+
+        /* Botones */
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: all 0.2s; font-size: 14px; }
+        .btn-primary { background-color: #3498db; color: white; }
+        .btn-primary:hover { background-color: #2980b9; transform: translateY(-1px); }
+        .btn-success { background-color: #2ecc71; color: white; }
+        .btn-danger { background-color: #e74c3c; color: white; }
+        .btn-warning { background-color: #f39c12; color: white; }
+
+        /* Alertas */
+        .alert { padding: 15px; border-radius: 5px; margin-top: 15px; font-weight: bold; display: none; }
+        
+        /* Formulario */
+        input[type="text"], input[type="number"], input[type="password"] {
+            padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; width: 100%; box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🛒 Punto de Venta Abarrotes</h1>
+    </div>
+
+    <div class="tab">
+        <button class="tablinks active" onclick="abrirPestana(event, 'Cobro')">1. Módulo de Cobro</button>
+        <button class="tablinks" onclick="abrirPestana(event, 'Admin')">2. Inventario y Precios</button>
+        <button class="tablinks" onclick="abrirPestana(event, 'Registro')">3. Cierres y Reportes</button>
+    </div>
+
+    <div id="Cobro" class="tabcontent" style="display:block;">
+        <div class="card">
+            <h2> Carrito de Ventas</h2>
+            
+            <div style="position: relative; margin-bottom: 25px;">
+                <input type="text" id="buscadorProductos" placeholder="Buscar producto por nombre o código..." 
+                       style="font-size: 1.2em; padding: 15px; width: 100%; box-sizing: border-box; border: 2px solid #3498db; border-radius: 6px;" 
+                       autocomplete="off" onkeyup="buscarProductoManual(event)">
+                
+                <div id="resultadosBusqueda" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-radius: 0 0 6px 6px; max-height: 250px; overflow-y: auto; display: none; z-index: 1000; box-shadow: 0 8px 16px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+
+            <div id="alertaGeneral" class="alert"></div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Producto</th>
+                        <th>Precio Unitario</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpoCarrito"></tbody>
+            </table>
+            
+            <div style="text-align: right; margin-top: 25px;">
+                <h2 style="font-size: 2em; color: #2c3e50;">Total a Pagar: $<span id="totalPagar">0.00</span></h2>
+                <button class="btn btn-success" style="font-size: 18px; padding: 15px 30px;" onclick="cobrarEfectivo()"> Cobrar en Efectivo</button>
+                <button class="btn btn-warning" style="font-size: 18px; padding: 15px 30px;" onclick="simularTarjeta()"> Pago con Tarjeta</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="Admin" class="tabcontent">
+        <div class="card">
+            <h2 style="color: #c0392b;"> Modificación de Precios</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <label>Llave de Admin:</label>
+                    <input type="password" id="adminKey" placeholder="Llave Maestra">
+                </div>
+                <div>
+                    <label>Código de Barras:</label>
+                    <input type="text" id="codigoBarras" placeholder="Escanear o escribir">
+                </div>
+                <div>
+                    <label>Nuevo Precio:</label>
+                    <input type="number" step="0.50" id="nuevoPrecio" placeholder="0.00">
+                </div>
+            </div>
+            <button class="btn btn-danger" onclick="cambiarPrecio()">Actualizar Precio del Producto</button>
+            <div id="priceStatus" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="card">
+            <h2> Surtido de Inventario (Excel)</h2>
+            <p>Sube el archivo enviado por tu proveedor para actualizar stock y precios masivamente.</p>
+            <div style="margin-bottom: 15px;">
+                <label><b>Key del Proveedor:</b></label>
+                <input type="password" id="providerKey">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label><b>Archivo .xlsx:</b></label><br>
+                <input type="file" id="excelFile" accept=".xlsx, .xls">
+            </div>
+            <button class="btn btn-primary" onclick="subirInventario()">Procesar Carga de Datos</button>
+            <div id="adminStatus" style="margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <div id="Registro" class="tabcontent">
+        <div class="card" style="text-align: center;">
+            <h2> Cierre de Caja</h2>
+            <p>Obtén el reporte detallado de las ventas del día de hoy.</p>
+            <button class="btn btn-warning" style="font-size: 1.2em; padding: 15px 40px;" onclick="descargarReporte()">
+                 Descargar Corte de Caja (Excel)
+            </button>
+            <div id="reportStatus" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <div id="modalCobro" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 10px; width: 400px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3);">
+            <h2 style="margin-top: 0; color: #2c3e50;"> Cobro en Efectivo</h2>
+            
+            <h3 style="font-size: 1.8em; color: #34495e; margin: 15px 0;">Total: $<span id="modalTotal">0.00</span></h3>
+
+            <div style="margin: 25px 0; background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                <label style="display: block; font-weight: bold; margin-bottom: 10px; font-size: 1.2em;">Efectivo Recibido:</label>
+                <input type="number" id="efectivoRecibido" step="0.50"  
+                       style="font-size: 2em; text-align: center; padding: 10px; width: 80%; border: 2px solid #3498db; border-radius: 5px; font-weight: bold; color: #2c3e50;" 
+                       onkeyup="calcularFeria()">
+            </div>
+
+            <h3 style="font-size: 1.8em; margin: 15px 0;">Feria / Cambio: <br><span id="modalFeria" style="color: #e74c3c;">$0.00</span></h3>
+
+            <div style="margin-top: 25px; display: flex; justify-content: space-between;">
+                <button class="btn btn-danger" style="width: 45%; font-size: 1.1em;" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn btn-success" id="btnConfirmarPago" style="width: 45%; font-size: 1.1em;" onclick="confirmarPago()" disabled>Confirmar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let carrito = {};
+        let totalPagar = 0;
+
+        // Gestión de Pestañas
+        function abrirPestana(evt, nombrePestana) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) tabcontent[i].style.display = "none";
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) tablinks[i].className = tablinks[i].className.replace(" active", "");
+            document.getElementById(nombrePestana).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // --- RADAR DE ESCANEO ---
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/get_scans');
+                const data = await response.json();
+                if (data.status === "success") {
+                    console.log("Detectado desde celular:", data.codigo);
+                    procesarEscaneo(data.codigo);
+                }
+            } catch (e) { /* Error silencioso */ }
+        }, 1000);
+
+        async function procesarEscaneo(codigo) {
+            try {
+                const response = await fetch('/scan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo_barras: codigo })
+                });
+                const data = await response.json();
+
+                if (response.ok && data.status === "success") {
+                    agregarAlCarrito(codigo, data.producto);
+                } else {
+                    mostrarAlerta(" Código no registrado: " + codigo, "danger");
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function agregarAlCarrito(codigo, producto) {
+            if (producto.stock <= 0) {
+                mostrarAlerta("⚠️ Stock agotado para: " + producto.nombre, "warning");
+            }
+
+            if (carrito[codigo]) {
+                carrito[codigo].cantidad += 1;
+            } else {
+                carrito[codigo] = {
+                    nombre: producto.nombre,
+                    precio: producto.precio,
+                    cantidad: 1
+                };
+            }
+            renderizarCarrito();
+        }
+
+        function cambiarCantidad(codigo, variacion) {
+            if (carrito[codigo]) {
+                carrito[codigo].cantidad += variacion;
+                if (carrito[codigo].cantidad <= 0) delete carrito[codigo];
+                renderizarCarrito();
+            }
+        }
+
+        function renderizarCarrito() {
+            const tbody = document.getElementById('cuerpoCarrito');
+            tbody.innerHTML = '';
+            totalPagar = 0;
+
+            for (let codigo in carrito) {
+                let item = carrito[codigo];
+                let subtotal = item.precio * item.cantidad;
+                totalPagar += subtotal;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${codigo}</td>
+                        <td>${item.nombre}</td>
+                        <td>$${item.precio.toFixed(2)}</td>
+                        <td>${item.cantidad}</td>
+                        <td>$${subtotal.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="cambiarCantidad('${codigo}', 1)">+</button>
+                            <button class="btn btn-danger" onclick="cambiarCantidad('${codigo}', -1)">-</button>
+                        </td>
+                    </tr>
+                `;
+            }
+            document.getElementById('totalPagar').innerText = totalPagar.toFixed(2);
+        }
+
+        // --- LÓGICA DE PAGOS ---
+        async function finalizarVenta() {
+            const response = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ carrito: carrito, total: totalPagar })
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+                carrito = {};
+                renderizarCarrito();
+                return true;
+            }
+            alert("Error: " + data.message);
+            return false;
+        }
+
+        // --- LÓGICA DE COBRO EN EFECTIVO (MODAL) ---
+        
+        // 1. Abre la ventana y la prepara
+        function cobrarEfectivo() {
+            if (totalPagar <= 0) {
+                mostrarAlerta("⚠️ El carrito está vacío", "warning");
+                return;
+            }
+            // Llenamos los datos iniciales
+            document.getElementById('modalTotal').innerText = totalPagar.toFixed(2);
+            document.getElementById('efectivoRecibido').value = '';
+            document.getElementById('modalFeria').innerText = '$0.00';
+            document.getElementById('modalFeria').style.color = '#e74c3c'; // Rojo por defecto
+            document.getElementById('btnConfirmarPago').disabled = true;
+            
+            // Mostramos el modal y ponemos el cursor en el input automáticamente
+            document.getElementById('modalCobro').style.display = 'flex';
+            document.getElementById('efectivoRecibido').focus();
+        }
+
+        // 2. Cierra la ventana
+        function cerrarModal() {
+            document.getElementById('modalCobro').style.display = 'none';
+        }
+
+        // 3. Calcula la feria en tiempo real (mientras escribes)
+        function calcularFeria() {
+            const inputEfectivo = document.getElementById('efectivoRecibido').value;
+            const recibido = parseFloat(inputEfectivo) || 0;
+            const feria = recibido - totalPagar;
+            
+            const txtFeria = document.getElementById('modalFeria');
+            const btnConfirmar = document.getElementById('btnConfirmarPago');
+
+            if (recibido >= totalPagar) {
+                txtFeria.innerText = '$' + feria.toFixed(2);
+                txtFeria.style.color = '#27ae60'; // Verde (Ya alcanza)
+                btnConfirmar.disabled = false;    // Activamos el botón de confirmar
+                
+                // Si presiona Enter cuando ya alcanza, cobra directo
+                if (event && event.key === 'Enter') {
+                    confirmarPago();
+                }
+            } else {
+                txtFeria.innerText = 'Faltan $' + Math.abs(feria).toFixed(2);
+                txtFeria.style.color = '#e74c3c'; // Rojo (Falta dinero)
+                btnConfirmar.disabled = true;     // Bloqueamos el botón
+            }
+        }
+
+        // 4. Ejecuta el cobro final en la base de datos
+        async function confirmarPago() {
+            const recibido = parseFloat(document.getElementById('efectivoRecibido').value);
+            const feria = recibido - totalPagar;
+            const totalCobrado = totalPagar; 
+            document.getElementById('btnConfirmarPago').disabled = true;
+
+            if (await finalizarVenta()) {
+                cerrarModal();
+                alert(` VENTA EXITOSA\n\nTotal: $${totalCobrado.toFixed(2)}\nEfectivo Recibido: $${recibido.toFixed(2)}\n\nENTREGAR FERIA: $${feria.toFixed(2)}`);
+            } else {
+                document.getElementById('btnConfirmarPago').disabled = false;
+            }
+        }
+
+        async function simularTarjeta() {
+            if (totalPagar <= 0) return;
+            if (confirm("¿Procesar pago con tarjeta?")) {
+                if (await finalizarVenta()) alert(" Pago Aprobado.");
+            }
+        }
+
+        // --- ADMIN E INVENTARIO ---
+        async function cambiarPrecio() {
+            const key = document.getElementById('adminKey').value;
+            const cod = document.getElementById('codigoBarras').value;
+            const prec = document.getElementById('nuevoPrecio').value;
+            
+            const response = await fetch('/api/update_price', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ admin_key: key, codigo_barras: cod, nuevo_precio: prec })
+            });
+            const data = await response.json();
+            document.getElementById('priceStatus').innerText = data.message;
+            document.getElementById('priceStatus').style.color = data.status === "success" ? "green" : "red";
+        }
+
+        async function subirInventario() {
+            const key = document.getElementById('providerKey').value;
+            const fileInput = document.getElementById('excelFile');
+            const formData = new FormData();
+            formData.append('provider_key', key);
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/api/upload_inventory', { method: 'POST', body: formData });
+            const data = await response.json();
+            document.getElementById('adminStatus').innerText = data.message;
+            document.getElementById('adminStatus').style.color = data.status === "success" ? "green" : "red";
+        }
+
+        async function descargarReporte() {
+            const response = await fetch('/api/generate_report');
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'reporte_ventas.xlsx';
+                a.click();
+            } else {
+                const data = await response.json();
+                alert(data.message);
+            }
+        }
+
+        function mostrarAlerta(msj, tipo) {
+            const al = document.getElementById('alertaGeneral');
+            al.innerText = msj;
+            al.className = `alert alert-${tipo}`;
+            al.style.display = 'block';
+            setTimeout(() => al.style.display = 'none', 3500);
+        }
+
+        // --- BUSCADOR INTELIGENTE ---
+        async function buscarProductoManual(event) {
+            const input = document.getElementById('buscadorProductos');
+            const query = input.value.trim();
+            const resultadosDiv = document.getElementById('resultadosBusqueda');
+
+            // 1. Si presiona la tecla "Enter" 
+            if (event.key === 'Enter') {
+                if (query !== "") {
+                    procesarEscaneo(query); 
+                    input.value = '';
+                    resultadosDiv.style.display = 'none';
+                }
+                return;
+            }
+
+            // 2. Autocompletado: Solo buscar si ha escrito 2 o más letras
+            if (query.length < 2) {
+                resultadosDiv.style.display = 'none';
+                return;
+            }
+
+            // 3. Consultar al backend
+            try {
+                const response = await fetch(`/api/search_product?q=${encodeURIComponent(query)}`);
+                const productos = await response.json();
+
+                resultadosDiv.innerHTML = ''; 
+
+                if (productos.length > 0) {
+                    productos.forEach(p => {
+                        const div = document.createElement('div');
+                        div.style.padding = '12px 15px';
+                        div.style.cursor = 'pointer';
+                        div.style.borderBottom = '1px solid #eee';
+                        div.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>${p.nombre}</strong><br>
+                                    <small style="color: #7f8c8d;">Código: ${p.codigo} | Stock: ${p.stock}</small>
+                                </div>
+                                <div style="font-weight: bold; color: #27ae60;">$${p.precio.toFixed(2)}</div>
+                            </div>
+                        `;
+                        
+                        div.onmouseover = () => div.style.backgroundColor = '#f4f7f6';
+                        div.onmouseout = () => div.style.backgroundColor = 'white';
+                        div.onclick = () => {
+                            procesarEscaneo(p.codigo);
+                            input.value = '';
+                            resultadosDiv.style.display = 'none';
+                            input.focus(); 
+                        };
+                        
+                        resultadosDiv.appendChild(div);
+                    });
+                    resultadosDiv.style.display = 'block';
+                } else {
+                    resultadosDiv.innerHTML = '<div style="padding: 15px; color: #e74c3c; text-align: center;">No se encontraron productos.</div>';
+                    resultadosDiv.style.display = 'block';
+                }
+            } catch (e) {
+                console.error("Error en la búsqueda dinámica:", e);
+            }
+        }
+
+        // Ocultar el desplegable si el cajero hace clic en cualquier otro lado de la pantalla
+        document.addEventListener('click', function(event) {
+            const buscador = document.getElementById('buscadorProductos');
+            const resultados = document.getElementById('resultadosBusqueda');
+            if (event.target !== buscador && event.target !== resultados && !resultados.contains(event.target)) {
+                resultados.style.display = 'none';
+            }
+        });
+
+    </script>
+</body>
+</html>

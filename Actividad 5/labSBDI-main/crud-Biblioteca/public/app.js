@@ -764,12 +764,12 @@ async function newEjemplar() {
   ]);
 
   const save = async () => {
-    const payload = readForm(form);
+    const payload = readForm(form); 
     payload.edicion_id = Number(payload.edicion_id);
-    await api.send("/api/ejemplares", "POST", payload);
-    toast("Ejemplar creado");
-    closeModal();
-    render();
+      await api.send("/api/ejemplares", "POST", payload);
+      toast("Ejemplar creado");
+      closeModal();
+      render();
   };
 
   openModal("Nuevo ejemplar", "Catálogo", form, [
